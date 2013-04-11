@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<pthread.h>
+#include<string.h>
 
 #define MAX_STRING_SIZE 100
 
@@ -30,35 +31,43 @@ return 0;
 }
 
 void* reader(void* arg){
-	printf("Dammi una stringa! \n");	
-	gets(s);
-	dim=0;
-	while(s[dim]!='\0'){
-		dim++;
-	}
-	pthread_t Te;
-	pthread_create(&Te,NULL,&randomize,NULL);
-	
-	if(pthread_join(Te,NULL)){
-		printf("Aborted \n");
-		exit(-1);
-	}
-
+	int attivo=1;
+	do{
+		printf("Dammi una stringa! \n");	
+		gets(s);
+		dim=0;
+		while(s[dim]!='\0'){
+			dim++;
+		}
+		if(strcmp(s,"quit")==0){
+			attivo=0;
+		}
+		else{		
+			pthread_t Te;
+			pthread_create(&Te,NULL,&randomize,NULL);
+		
+			if(pthread_join(Te,NULL)){
+				printf("Aborted \n");
+				exit(-1);
+			}
+		}
+	}while(attivo==1);
 	return NULL;
 }
 
 void* randomize(void* args){
 	int i=0;
-	int data = open("/dev/random");
 	int myrandomint;
 	while(i<dim){
+		int data = open("/dev/random");
 		read(data, &myrandomint, sizeof myrandomint);
 		myrandomint = myrandomint%63;
 		if(myrandomint<0) myrandomint = -myrandomint;
 		myrandomint += 64;		
 		//printf("random int: %d  %c\n", myrandomint,(char) myrandomint);		
-		r[i] = myrandomint;
+		r[i] = (char) myrandomint;
 		i++;
+		close(data);
 	}
 	printf("R: %s\n",r);
 	i=0;
