@@ -21,6 +21,8 @@ void initDebugMode();
 void openLogFile();
 void quitLog();
 void printHelp();
+char * time_to_string();
+char buf[30];
 bool debugFlag = false;
 FILE * Trlog;
 FILE * Telog;
@@ -54,7 +56,7 @@ void boot(int argc, char **argv){
 	pthread_create(&Tr,NULL,&reader,NULL);
 
 	if(pthread_join(Tr,NULL)){
-		fprintf (Trlog, "Aborted at %s",ctime (&timer));
+		fprintf (Trlog, "%s - Aborted.\n",ctime (&timer));
 		quitLog();
 		exit(-1);
 	}
@@ -73,22 +75,19 @@ void* reader(void* arg){
 		stringhe.Se = (char*)malloc(sizeof(char)*(strlen(buffer)+1));
 		stringhe.Sd = (char*)malloc(sizeof(char)*(strlen(buffer)+1));
 		strcpy(stringhe.s,buffer);
-		dim=0;
-		while(stringhe.s[dim]!='\0'){
-			dim++;
-		}
+		dim = strlen(stringhe.s);
 		if(strcmp(stringhe.s,"quit")==0){
 			attivo=0;
 		}
 		else{
 			time(&timer);
-			if(debugFlag) fprintf (Trlog, "Read a string at %s",ctime (&timer));
+			if(debugFlag) fprintf (Trlog, "%s - Read string: %s\n",time_to_string(),stringhe.s);
 			
 			pthread_t Te;
 			pthread_create(&Te,NULL,&randomize,&stringhe);
 		
 			if(pthread_join(Te,NULL)){
-				fprintf (Telog, "Aborted at %s",ctime (&timer));
+				fprintf (Telog, "%s - Aborted.\n",time_to_string());
 				quitLog();
 				exit(-1);
 			}
@@ -118,13 +117,13 @@ void* randomize(void* args){
 	}
 	
 	time(&timer);
-	if(debugFlag) fprintf (Telog, "Create random string and XOR at %s",ctime (&timer));
+	if(debugFlag) fprintf (Telog, "%s - Create random string:\n %s \n and XOR with:\n %s \n result: \n %s \n",time_to_string(),stringhe->s,stringhe->r,stringhe->Se);
 
 	pthread_t Td;
 	pthread_create(&Td,NULL,&decript,stringhe);
 	
 	if(pthread_join(Td,NULL)){
-		fprintf (Tdlog, "Aborted at %s",ctime (&timer));
+		fprintf (Tdlog, "%s - Aborted.\n",time_to_string());
 		quitLog();
 		exit(-1);
 	}
@@ -141,13 +140,13 @@ void* decript(void* args){
 	}
 
 	time(&timer);
-	if(debugFlag) fprintf (Tdlog, "Last XOR %s",ctime (&timer));
+	if(debugFlag) fprintf (Tdlog, "%s - Last operation: \n %s XOR %s \n result: %s\n",time_to_string(),stringhe->r,stringhe->Se,stringhe->Sd);
 
 	pthread_t Tw;
 	pthread_create(&Tw,NULL,&print_string,stringhe);
 	
 	if(pthread_join(Tw,NULL)){
-		fprintf (Twlog, "Aborted at %s",ctime (&timer));
+		fprintf (Twlog, "%s - Aborted.\n",time_to_string());
 		quitLog();
 		exit(-1);
 	}
@@ -158,7 +157,7 @@ void* print_string(void* args){
 	struct thread_args * stringhe = (struct thread_args *) args;
 
 	time(&timer);
-	fprintf (Twlog, "Print string at %s",ctime (&timer));
+	if(debugFlag) fprintf (Twlog, "%s - Print strings\n",time_to_string());
 
 	printf("s: %s \n",stringhe->s);
 	printf("r: %s \n",stringhe->r);
@@ -169,10 +168,10 @@ void* print_string(void* args){
 
 void initDebugMode(){
 	time(&timer);
-	fprintf (Trlog, "Debug Mode On at %s",ctime (&timer));
-	fprintf (Telog, "Debug Mode On at %s",ctime (&timer));
-	fprintf (Tdlog, "Debug Mode On at %s",ctime (&timer));
-	fprintf (Twlog, "Debug Mode On at %s",ctime (&timer));
+	fprintf (Trlog, "%s - Debug Mode On\n",time_to_string());
+	fprintf (Telog, "%s - Debug Mode On\n",time_to_string());
+	fprintf (Tdlog, "%s - Debug Mode On\n",time_to_string());
+	fprintf (Twlog, "%s - Debug Mode On\n",time_to_string());
 }
 
 void openLogFile(){
@@ -181,26 +180,38 @@ void openLogFile(){
 	Tdlog = fopen ("/var/log/threads/td.log","a");
 	Twlog = fopen ("/var/log/threads/tw.log","a");
 	time(&timer);
-	fprintf (Trlog, "Program Start at %s",ctime (&timer));
-	fprintf (Telog, "Program Start at %s",ctime (&timer));
-	fprintf (Tdlog, "Program Start at %s",ctime (&timer));
-	fprintf (Twlog, "Program Start at %s",ctime (&timer));
+	fprintf (Trlog, "%s - Program Start\n",time_to_string());
+	fprintf (Telog, "%s - Program Start\n",time_to_string());
+	fprintf (Tdlog, "%s - Program Start\n",time_to_string());
+	fprintf (Twlog, "%s - Program Start\n",time_to_string());
 }
 
 void quitLog(){
-	fprintf (Trlog, "Program Quit at %s",ctime (&timer));
-	fprintf (Telog, "Program Quit at %s",ctime (&timer));
-	fprintf (Tdlog, "Program Quit at %s",ctime (&timer));
-	fprintf (Twlog, "Program Quit at %s",ctime (&timer));
+	time(&timer);
+	fprintf (Trlog, "%s - Program Quit\n",time_to_string());
+	fprintf (Telog, "%s - Program Quit\n",time_to_string());
+	fprintf (Tdlog, "%s - Program Quit\n",time_to_string());
+	fprintf (Twlog, "%s - Program Quit\n",time_to_string());
 }
 
 void printHelp(){
-  printf("Encrypter\n\n");
+  	printf("\n\nEncrypter\n\n");
 	printf("Description: \n");
 	printf("The program read a string ( given by the user ) and encrypt it, then after some XOR operations return the original string.\n\n");
 	printf("Usage: \n");
 	printf("encrypter [arguments]    		starts the program \n \n");
 	printf("Arguments: \n");
 	printf("-d	Run the program in debug mode ( logs are more detailed ) \n");
-	printf("-h	Show help (this message) and exit \n\n\n\n");
+	printf("-h	Show help (this message) and exit \n\n");
+}
+ 
+char * time_to_string(){
+	char* tmp = ctime (&timer);
+	strcpy(buf, tmp);
+	char* p = strchr(buf,'\n');
+	if (p)
+	{
+    	*p = '\0';
+	}
+	return buf;
 }
