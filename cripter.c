@@ -20,7 +20,7 @@ void* print_string(void* args);
 void initDebugMode();
 void openLogFile();
 void quitLog();
-int debugFlag = 0;
+bool debugFlag = false;
 FILE * Trlog;
 FILE * Telog;
 FILE * Twlog;
@@ -32,7 +32,7 @@ void boot(int argc, char **argv){
 	 switch (a)
            {
            case 'd':
-             debugFlag = 1;
+             debugFlag = true;
 	     openLogFile();
 	     initDebugMode();
              break;
@@ -53,7 +53,8 @@ void boot(int argc, char **argv){
 	pthread_create(&Tr,NULL,&reader,NULL);
 
 	if(pthread_join(Tr,NULL)){
-		printf("Aborted \n");
+		fprintf (Trlog, "Aborted at %s",ctime (&timer));
+		quitLog();
 		exit(-1);
 	}
 }
@@ -80,13 +81,14 @@ void* reader(void* arg){
 		}
 		else{
 			time(&timer);
-			fprintf (Trlog, "Read a string at %s",ctime (&timer));
+			if(debugFlag) fprintf (Trlog, "Read a string at %s",ctime (&timer));
 			
 			pthread_t Te;
 			pthread_create(&Te,NULL,&randomize,&stringhe);
 		
 			if(pthread_join(Te,NULL)){
-				printf("Aborted \n");
+				fprintf (Telog, "Aborted at %s",ctime (&timer));
+				quitLog();
 				exit(-1);
 			}
 		}
@@ -115,13 +117,14 @@ void* randomize(void* args){
 	}
 	
 	time(&timer);
-	fprintf (Telog, "Create random string and XOR at %s",ctime (&timer));
+	if(debugFlag) fprintf (Telog, "Create random string and XOR at %s",ctime (&timer));
 
 	pthread_t Td;
 	pthread_create(&Td,NULL,&decript,stringhe);
 	
 	if(pthread_join(Td,NULL)){
-		printf("Aborted \n");
+		fprintf (Tdlog, "Aborted at %s",ctime (&timer));
+		quitLog();
 		exit(-1);
 	}
 	
@@ -137,13 +140,14 @@ void* decript(void* args){
 	}
 
 	time(&timer);
-	fprintf (Tdlog, "Last XOR %s",ctime (&timer));
+	if(debugFlag) fprintf (Tdlog, "Last XOR %s",ctime (&timer));
 
 	pthread_t Tw;
 	pthread_create(&Tw,NULL,&print_string,stringhe);
 	
 	if(pthread_join(Tw,NULL)){
-		printf("Aborted \n");
+		fprintf (Twlog, "Aborted at %s",ctime (&timer));
+		quitLog();
 		exit(-1);
 	}
 	return NULL;

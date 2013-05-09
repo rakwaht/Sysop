@@ -1,15 +1,17 @@
 all: cripter
 
 cripter: cripter.c threads.c 
+	gcc threads.c cripter.c -pthread -o encrypter
+
+install: 	
 	mkdir -p /var/log/threads
 	touch /var/log/threads/tr.log
 	touch /var/log/threads/td.log
 	touch /var/log/threads/tw.log
 	touch /var/log/threads/te.log
-	gcc threads.c cripter.c -pthread -o cripter
-	cp cripter /bin
+	cp encrypter /bin
 
 clean:
 	rm -rf /var/log/threads
-	rm cripter
-	rm /bin/cripter
+	rm -f encrypter
+	rm -f /bin/encrypter

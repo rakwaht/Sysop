@@ -7,6 +7,7 @@
 #include<string.h>
 #include<time.h>
 #include <sys/stat.h>
+#include <stdbool.h>
 
 /*Funzione che permette di far partire il cripter. 
 il programma crea un thread di lettura, uno che genera stringhe a caso,
