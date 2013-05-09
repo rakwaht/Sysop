@@ -195,12 +195,12 @@ void quitLog(){
 }
 
 void printHelp(){
-  printf("\n\nEncrypter\n\n");
+  printf("Encrypter\n\n");
 	printf("Description: \n");
 	printf("The program read a string ( given by the user ) and encrypt it, then after some XOR operations return the original string.\n\n");
 	printf("Usage: \n");
 	printf("encrypter [arguments]    		starts the program \n \n");
 	printf("Arguments: \n");
 	printf("-d	Run the program in debug mode ( logs are more detailed ) \n");
-	printf("-h	Show help (this message) and exit \n\n");
+	printf("-h	Show help (this message) and exit \n\n\n\n");
 }
