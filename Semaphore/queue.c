@@ -1,76 +1,83 @@
-#include "queue.h"
-/*Queue has five properties. capacity stands for the maximum number of elements Queue can hold.
-  Size stands for the current size of the Queue and elements is the array of elements. front is the
- index of first element (the index at which we remove the element) and rear is the index of last element
- (the index at which we insert the element) */
+/*
+  
+  Anno Accademico: 2012-2013
+  Corso di Studio: Scienze Informatiche - Sistemi Operativi
+  Titolo: Progetto2 - Threads: Encrypter
+  Autori: Bergamo Federico 151736, Martintoni Davide 151712, Passerini Luca 15
 
-/* crateQueue function takes argument the maximum number of elements the Queue can hold, creates
-   a Queue according to it and returns a pointer to the Queue. */
-Queue * createQueue(int maxElements)
-{
-        /* Create a Queue */
-        Queue *Q;
-        Q = (Queue *)malloc(sizeof(Queue));
-        /* Initialise its properties */
-        Q->elements = (char **)malloc(sizeof(char *)*maxElements);
-        Q->size = 0;
-        Q->capacity = maxElements;
-        Q->front = 0;
-        Q->rear = -1;
-        /* Return the pointer */
-        return Q;
+*/
+
+// Questo codice ci permette di definire la struttura della coda e le varie funzioni ad essa associate.
+
+#include "queue.h"
+
+/* 
+   Questa funzione inizializza la queue e i vari parametri:
+   - elements: è un puntatore a stringa;
+   - size: è la grandezza attuale della coda;
+   - capacity: è la capacità massima della coda;
+   - font/rear: sono rispettivamente la testa e la coda;
+*/
+Queue * createQueue(int maxElements){
+  Queue *Q;
+  Q = (Queue *)malloc(sizeof(Queue));
+  Q->elements = (char **)malloc(sizeof(char *)*maxElements);
+  Q->size = 0;
+  Q->capacity = maxElements;
+  Q->front = 0;
+  Q->rear = -1;
+  return Q;
 }
-void Dequeue(Queue *Q)
-{
-        /* If Queue size is zero then it is empty. So we cannot pop */
-        if(Q->size==0)
-        {
-               return;
-        }
-        /* Removing an element is equivalent to incrementing index of front by one */
-        else
-        {
-                Q->size--;
-                Q->front++;
-                /* As we fill elements in circular fashion */
-                if(Q->front==Q->capacity)
-                {
-                        Q->front=0;
-                }
-        }
-        return;
+
+// Dequeue toglie l'elemento in coda
+void Dequeue(Queue *Q){
+  if(Q->size==0)
+    {
+      return;
+    }
+  else
+    {
+      Q->size--;
+      Q->front++;
+      if(Q->front==Q->capacity)
+	{
+	  Q->front=0;
+	}
+    }
+  return;
 }
+
+// Front restituisce l'elemento in coda
 char * front(Queue *Q)
 {
-        if(Q->size==0)
-        {
-                return NULL;
-        }
-        /* Return the element which is at the front*/
-        return Q->elements[Q->front];
-}
-void Enqueue(Queue *Q,char * element)
-{
-        /* If the Queue is full, we cannot push an element into it as there is no space for it.*/
-        if(Q->size == Q->capacity)
-        {
-                printf("Queue is Full\n");
-        }
-        else
-        {
-                Q->size++;
-                Q->rear = Q->rear + 1;
-                /* As we fill the queue in circular fashion */
-                if(Q->rear == Q->capacity)
-                {
-                        Q->rear = 0;
-                }
-                /* Insert the element in its rear side */ 
-                Q->elements[Q->rear] = element;
-        }
-        return;
+  if(Q->size==0)
+    {
+      return NULL;
+    }
+  return Q->elements[Q->front];
 }
 
+// Enqueue aggiunge un elemento alla coda
+void Enqueue(Queue *Q,char * element)
+{
+  if(Q->size == Q->capacity)
+    {
+      return NULL;
+    }
+  else
+    {
+      Q->size++;
+      Q->rear = Q->rear + 1;
+      if(Q->rear == Q->capacity)
+	{
+	  Q->rear = 0;
+                }
+      Q->elements[Q->rear] = element;
+    }
+  return;
+}
+
+// isEmpty controlla se la coda è vuota
 bool isEmpty(Queue * Q){
 	if(Q->size == 0){
 		return true;
