@@ -97,14 +97,28 @@ void boot(int argc, char **argv){
 
 void* reader(void* arg){
 	while(true){	
-		//critical section start	
-		//printf("Dammi una stringa! \n");
-		char buffer[MAX_STRING_SIZE];
-		gets(buffer);
+		int i =0;
+        	//accept user input until hit enter or end of file
+		int len_max = 10;
+		char *buffer = (char*)malloc(sizeof(char)*(len_max));
+		int current_size = len_max;
+		char c;    		
+		while (( c = getchar() ) != '\n')
+    			{
+        			buffer[i++]=(char)c;
+        			//if i reached maximize size then realloc size
+        			if(i == current_size)
+        			{
+                        		current_size = i+len_max;
+            				buffer = realloc(buffer, sizeof(char)*(current_size+1));
+        			}
+    			}
+		buffer[i+1] = '\0';
 		if(strcmp(buffer,"quit")==0){
 			shutDown();
 		}
 		else{
+		//critical section start
 		pthread_mutex_lock(&mutex);		
 		//enqueue
 		Enqueue(Q,buffer);		
@@ -121,13 +135,10 @@ void* randomize(void* args){
 	while(true){
 	//critical section start	
 	sem_wait (&te_mutex);
-	//while(isEmpty(Q)){
-		//sleep(1000);
-	//}
-	//printf("dequeuo \n");
-	char * buffer;
 	//dequeue
 	if(!isEmpty(Q)){
+	printf("dio\n");
+	char * buffer;
 	pthread_mutex_lock(&mutex);
 	buffer = front(Q);
 	Dequeue(Q);
@@ -144,7 +155,7 @@ void* randomize(void* args){
 	while(i<dim){
 		char temp;
 		read(data, &temp, sizeof(char));
-		temp = (temp % 25) + 65;
+		temp = (temp % 25) + 100;
 		stringhe.r[i] = temp;
 		i++;
 	}
@@ -193,6 +204,10 @@ void* print_string(void* args){
 	printf("se: %s \n",stringhe.Se);
 	printf("sd: %s \n",stringhe.Sd);
 	//critical section end
+	//free(stringhe.s);
+	//free(stringhe.r);
+	//free(stringhe.Se);
+	//free(stringhe.Sd);
 	sem_post (&te_mutex);
 	}
 	return NULL;
