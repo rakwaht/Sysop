@@ -137,7 +137,6 @@ void* randomize(void* args){
 	sem_wait (&te_mutex);
 	//dequeue
 	if(!isEmpty(Q)){
-	printf("dio\n");
 	char * buffer;
 	pthread_mutex_lock(&mutex);
 	buffer = front(Q);

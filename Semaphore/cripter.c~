@@ -155,7 +155,7 @@ void* randomize(void* args){
 	while(i<dim){
 		char temp;
 		read(data, &temp, sizeof(char));
-		temp = (temp % 25) + 65;
+		temp = (temp % 25) + 100;
 		stringhe.r[i] = temp;
 		i++;
 	}
