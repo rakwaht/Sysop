@@ -10,6 +10,7 @@
 // Questo codice ci permette di definire la struttura della coda e le varie funzioni ad essa associate.
 
 #include "queue.h"
+#include <string.h>
 
 /* 
    Questa funzione inizializza la queue e i vari parametri:
@@ -62,7 +63,7 @@ void Enqueue(Queue *Q,char * element)
 {
   if(Q->size == Q->capacity)
     {
-      return NULL;
+      return;
     }
   else
     {
@@ -72,7 +73,8 @@ void Enqueue(Queue *Q,char * element)
 	{
 	  Q->rear = 0;
                 }
-      Q->elements[Q->rear] = element;
+      Q->elements[Q->rear] = (char*)malloc(sizeof(char)*(strlen(element)+1));
+      strcpy(Q->elements[Q->rear],element);
     }
   return;
 }
